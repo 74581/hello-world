@@ -1,8 +1,0 @@
-#example
-git config --global core.editor "'C:/Program Files/Sublime Text 2/sublime_text.exe' -n -w"
-/git config --global core.editor emacs
-git config --global push.default upstream
-git config --global merge.conflictstyle diff3
-alias subl="C:/Program\ Files/Sublime\ Text\ 2/sublime_text.exe"
-git config --global user.name "John Doe"
-git config --global user.email johndoe@example.com
