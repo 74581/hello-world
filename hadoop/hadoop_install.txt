@@ -1,0 +1,28 @@
+Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和跟踪工作
+可以安装Cloudera 5虚拟机，执行操作步骤后开发环境最终会安装成功，快速搭建Hadoop开发环境
+
+1.在Windows系统中安装Hadoop
+    在Windows系统上运行Hadoop，需要使用源代码自行编译
+    1.1准备安装环境
+        1.安装JDK
+        2.下载Hadoop，从www.apache.org，如hadoop-3.0.0-src.tar.gz，解压tar文件
+        3.可以使用Visual Studio，或下载Microsoft Windows SDK,安装SDK给予完整权限
+        4.下载安装Windows的类Linux环境Cygwin，从cygwin.com
+        5.下载安装Maven
+        6.下载安装Protocol Buffers，从Google的github下
+        7.下载安装ZLIB，从zlib.net
+        8.添加系统环境变量
+            JAVA_HOME: jdk路径
+            M2_HOME: Maven的路径
+            Platform: X64
+            CYGWIN_HOME
+            PROTOBUF_HOME
+            ZLIB_HOME
+        9.添加PATH环境变量：
+            %JAVA_HOME%\bin\
+            %CYGWIN_HOME%\bin\
+            %M2_HOME%\bin\
+            %PROTOBUF_HOME%\bin\
+            %ZLIB_HOME
+        Platform变量大小写敏感，尽管Windows环境变量对大小写不敏感，MAVEN对变量名大小写敏感
+        若未正确设置会导致编译Hadoop-common的原生代码时出现msbuild错误
