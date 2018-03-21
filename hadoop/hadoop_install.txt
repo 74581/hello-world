@@ -76,59 +76,15 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
                 configure: error: C compiler cannot create executables
                 See `config.log' for more details
 
-            5.尝试安装gcc：
-                参考：http://blog.csdn.net/chinajobs/article/details/52814608  # 中文，重新安装Cygwin时添加相应包
-                参考：http://blog.csdn.net/rbpicsdn/article/details/79565383  # 下面网址的简略版，补充了下载先决条件的一步
-                参考：http://preshing.com/20141108/how-to-install-the-latest-gcc-on-windows/
+            5.安装gcc：
+                参考：http://blog.csdn.net/chinajobs/article/details/52814608  # 重新安装Cygwin时添加相应包，非最新版
                     1.重新下载Cygwin安装包，从：https://cygwin.com/install.html
                     2.将.exe文件放于Cygwin目录下，如：C:\Program Files\cygwin64
                     3.从cmd打开该目录，运行命令：
                         # 已打开该目录忽略C:\cygwin64>
                         C:\cygwin64>setup-x86_64.exe -q -P wget -P gcc-g++ -P make -P diffutils -P libmpfr-devel -P libgmp-devel -P libmpc-devel
-                    4.下载最新版本gcc，如gcc-7.3.0，解压至C:\Program Files\cygwin64\home\<用户名>\gcc-7.3.0，或使用如下命令：
-                        $ wget https://mirrors.ustc.edu.cn/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz  # 科大开源镜像站的GCC源码 
-                        $ tar -xf gcc-7.3.0.tar.gz 
-                    5.进入解压好的目录，运行download_prerequisites脚本，下载依赖：gmp-6.1.0、isl-0.16.1、mpc-1.0.3、mpfr-3.1.4
-                        $ cd gcc-7.3.0
-                        $ ./contrib/download_prerequisites
-                    6.手动返回默认目录，新建文件夹作为编译输出目录，并进行配置，如：C:\Program Files\cygwin64\home\<用户名>\build-gcc，或使用如下命令：
-                        $ mkdir build-gcc
-                        $ cd build-gcc
-                        $ ../gcc-7.3.0/configure --program-suffix=-7.3.0 --enable-languages=c,c++ --disable-bootstrap --disable-shared
-                            参数解释：
-                            --program-suffix=-7.3.0:
-                            means that once our new GCC is installed, we’ll run it as g++-7.3.0.
-                            This will make it easier for the new GCC compiler to coexist alongside the system GCC compiler provided by Cygwin.
-
-                            --enable-languages=c,c++:
-                            means that only the C and C++ compilers will be built.
-                            Compilers for other languages, such as Fortran, Java and Go, will be excluded. This will save compile time.
-
-                            --disable-bootstrap:
-                            means that we only want to build the new compiler once.
-                            If we don’t specify --disable-bootstrap,
-                            the new compiler will be built three times, for testing and performance reasons.
-                            However, the system GCC compiler provided by Cygwin is pretty recent,
-                            so --disable-bootstrap is good enough for our purposes.
-                            This will save a significant amount of compile time.
-
-                            --disable-shared:
-                            means that we don’t want to build the new standard C++ runtime library
-                            as a DLL that’s shared with other C++ applications on the system.
-                            It’s totally possible to make C++ executables work with such DLLs,
-                            but it takes care not to introduce conflicts with C++ executables created by older or newer versions of GCC.
-                            That’s something distribution maintainers need to worry about;
-                            not us. Let’s just avoid the additional headache.
-                            
-                            中文简略攻略中使用的参数：
-                            –enable-checking=release: 增加一些检查，也可以–disable-checking生成的编译器在编译过程中不做额外检查
-                            –enable-languages=c,c++: 你要让你的gcc支持的编程语言
-                            –disable-multilib: 取消多目标库编译(取消32位库编译)
-                    7.编译，安装，验证版本
-                        $ make
-                        $ make install
-                        $ gcc -v
-                        $ which gcc  # 查看gcc的安装位置
+                # 更新操作
+                参考：http://blog.csdn.net/rbpicsdn/article/details/79565383
             
             6.重新执行第3步
 
