@@ -41,3 +41,74 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
         1.在自建目录下解压hadoop-3.0.0.tar.gz文件，应使用较短的文件夹名避免路径总长超出Windows路径长度的限制
         2.将C:\Program Files\hadoop-3.0.0路径加入HADOOP_HOME环境变量
         3.将%HADOOP_HOME%\bin变量加入PATH环境变量
+    
+    1.4配置Hadoop
+        1.core-site.xml
+        覆盖一部分呢用于控制Hadoop核心的默认关键配置，地址：%HADOOP_HOME%/etc/hadoop/core-site.xml
+            <configuration>
+              <property>
+                <name>fs.faultFS</name>
+                <value>hdfs://localhost:9000</value>
+              </property>
+            </configuration>
+        fs.faultFS:
+            Hadoop使用的默认文件系统的结构、主机名、端口号
+            该值表示使用HDFS文件系统，名称节点的运行于本地，并使用9000端口
+        
+        2.hdfs-site.xml
+        通过该文件可修改有关HDFS的默认配置，地址：%HADOOP_HOME%/etc/hadoop/hdfs-site.xml
+            <configuration>
+              <property>
+                <name>dfs.replication</name>
+                <value>1</value>
+              </property>
+              <property>
+                <name>dfs.namenode.name.dir</name>
+                <value>file:%HADOOP_HOME%/data/dfs/namenode</value>
+              </property>
+              <property>
+                <name>dfs.datanode.data.dir</name>
+                <value>file:%HADOOP_HOME%/data/dfs/datanode</value>
+              </property>
+            </configuration>
+        dfs.namenode.name.dir和dfs.datanode.data.dir提到的文件目录需要在C：根目录中创建
+        dfs.replication:
+            默认的复制策略，决定文件块的副本数量，Hadoop会将文件分块（block，默认大小128M），并为它们创建副本以保证冗余
+            该参数可指定块副本个数，因为本系统运行于伪分布模式下，默认副本数量是1，实际生产集群一般（默认）指定为3
+        dfs.namenode.name.dir:
+            存储文件系统元数据的名称节点在本地文件系统中的目录
+        dfs.datanode.data.dir:
+            存储实际文件块的数据节点在本地文件系统中的目录
+        
+        3.yarn-site.xml
+        覆盖YARN组件的默认属性值，地址：%HADOOP_HOME%/etc/hadoop/yarn-site.xml
+            <configuration>
+              <property>
+                <name>yarn.nodemanager.aux-services</name>
+                <value>mapreduce_shuffle</value>
+              </property>
+              <property>
+                <name>
+                  yarn.nodemanager.aux-services.mapreduce_shuffle.class
+                </name>
+                <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+              </property>
+            </configuration>
+        yarn.nodemanager.aux-services:
+            加入节点管理器的辅助服务名，Shuffle/Sort是一种辅助服务，这里指定的服务名是mapreduce_shuffle
+            实现该服务的类将在接下来的属性中配置，若存在多个服务，服务名需要使用逗号分隔
+        yarn.nodemanager.aux-services.mapreduce_shuffle.class:
+            mapreduce_shuffle服务的实现，该配置的名称必须遵循yarn.nodemanager.aux-services[service_name].class格式
+        
+        4.mapred-site.xml
+        覆盖用于MapReduce任务执行的默认属性值，地址：%HADOOP_HOME%/etc/hadoop/mapred-site.xml
+            <configuration>
+              <property>
+                <name>mapreduce.framework.name</name>
+                <value>yarn</value>
+              </property>
+            </configuration>
+        mapreduce.framework.name：
+            用来执行MapReduce任务的运行时框架，指定为YARN，表示任务会提交给YARN集群，yarn选项可将集群配置在伪分布模式中
+            若设置为local则表示使用LocalJobRunner执行任务，local可用于开发环境，任务将在单个JVM中运行
+            该属性决定了MapReduce框架运行在本地模式local，经典模式（classic，MapReduce v1），或YARN（yarn，MapReduce v2）模式中
