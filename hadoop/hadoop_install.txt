@@ -2,94 +2,17 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
 可以安装Cloudera 5虚拟机，执行操作步骤后开发环境最终会安装成功，快速搭建Hadoop开发环境
 
 1.在Windows系统中安装Hadoop
-    在Windows系统上运行Hadoop，需要使用源代码自行编译
+    在Windows系统上运行Hadoop
     1.1准备安装环境
         1.下载安装JDK
-
-        2.下载Hadoop，从www.apache.org，如hadoop-3.0.0-src.tar.gz，解压tar文件
-
-        3.可以使用Visual Studio，或下载Microsoft Windows SDK,安装SDK给予完整权限，选择VS 2017
-        
+        2.下载Hadoop，下载二进制版（省去自己编译打包源码的步骤），如hadoop-3.0.0.tar.gz，解压tar文件
+        3.可以使用Visual Studio，或下载Microsoft Windows SDK,安装SDK给予完整权限，选择安装VS 2017
         4.下载安装Windows的类Linux环境Cygwin，从cygwin.com
-
         5.下载Maven
-
-        6.下载Protocol Buffers，从Google的github下载release package，以下英文摘自protobuf的README.md：
-            1.用Cygwin打开protobuf所在目录
-
-            2.If you get the source from github, you need to generate the configure script
-            first:
-
-                $ ./autogen.sh
-
-            This will download gmock source (which is used for C++ Protocol Buffer
-            unit-tests) to the current directory and run automake, autoconf, etc.
-            to generate the configure script and various template makefiles.
-
-            You can skip this step if you are using a release package (which already
-            contains gmock and the configure script).
-
-            3.To build and install the C++ Protocol Buffer runtime and the Protocol
-            Buffer compiler (protoc) execute the following:
-
-                $ ./configure
-                $ make
-                $ make check
-                $ sudo make install
-                $ sudo ldconfig # refresh shared library cache.
-
-            If "make check" fails, you can still install, but it is likely that
-            some features of this library will not work correctly on your system.
-            Proceed at your own risk.
-
-            4.运行第一条命令，报错：
-                ...
-                checking for gcc... no
-                checking for cc... no
-                checking for cl.exe... no
-                configure: error: in `/cygdrive/c/Program Files/protobuf-3.5.1':
-                configure: error: no acceptable C compiler found in $PATH
-                See `config.log' for more details
-
-                # 预计安装gcc可跳过此步
-                尝试配置cl.exe的环境变量:
-                1. 在环境变量中Path中添加两个路径：
-                    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.13.26128\bin\Hostx64\x64
-                    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE
-                2. 在环境变量中新建一个LIB变量，并添加三个路径（记得加分号）：
-                    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.13.26128\lib\x64;
-                    C:\Program Files (x86)\Windows Kits\10\Lib\10.0.16299.0\ucrt\x64;
-                    （安装时第三个路径不存在）C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86;
-                3. 在环境变量中新建一个INCLUDE变量，并添加两个路径（记得加分号）：
-                    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.13.26128\include;
-                    C:\Program Files (x86)\Windows Kits\10\Include\10.0.16299.0\ucrt;
-                4. 在C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build中
-                    运行vcvarsall.bat批处理程序，之后打开命令行，输入cl，查看是否配置成功
-                
-                配置成功后，重新运行第一条命令，报错：
-                ...
-                checking for gcc... no
-                checking for cc... no
-                checking for cl.exe... cl.exe
-                checking whether the C compiler works... no
-                configure: error: in `/cygdrive/c/Program Files/protobuf-3.5.1':
-                configure: error: C compiler cannot create executables
-                See `config.log' for more details
-
-            5.安装gcc：
-                参考：http://blog.csdn.net/chinajobs/article/details/52814608  # 重新安装Cygwin时添加相应包，非最新版
-                    1.重新下载Cygwin安装包，从：https://cygwin.com/install.html
-                    2.将.exe文件放于Cygwin目录下，如：C:\Program Files\cygwin64
-                    3.从cmd打开该目录，运行命令：
-                        # 已打开该目录忽略C:\cygwin64>
-                        C:\cygwin64>setup-x86_64.exe -q -P wget -P gcc-g++ -P make -P diffutils -P libmpfr-devel -P libgmp-devel -P libmpc-devel
-                # 更新操作
-                参考：http://blog.csdn.net/rbpicsdn/article/details/79565383
-            
-            6.重新执行第3步
-
+        6.下载Protocol Buffers，从https://github.com/google/protobuf/releases
+            下载protobuf-all-3.5.1.zip、protoc-3.5.1-win32.zip
+            解压zip包到文件夹，如C:\Program Files\protobuf-3.5.1，同时将win32包中内容也放在该目录下
         7.下载ZLIB，从zlib.net
-
         8.添加系统环境变量
             JAVA_HOME: jdk路径
             M2_HOME: Maven的路径
@@ -97,7 +20,6 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
             CYGWIN_HOME
             PROTOBUF_HOME
             ZLIB_HOME
-        
         9.添加PATH环境变量：
             %JAVA_HOME%\bin\
             %CYGWIN_HOME%\bin\
