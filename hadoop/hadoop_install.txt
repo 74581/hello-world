@@ -28,3 +28,11 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
             %ZLIB_HOME
         Platform变量大小写敏感，尽管Windows环境变量对大小写不敏感，MAVEN对变量名大小写敏感
         若未正确设置会导致编译Hadoop-common的原生代码时出现msbuild错误
+    
+    # 下载二进制版可跳过该步骤
+    1.2构建Windows环境下的Hadoop
+        1.在管理员模式下运行命令行控制台
+        2.打开Hadoop源码存放目录
+        3.执行mvn打包命令，附加参数
+            mvn package -Pdist,native-win -DskipTests -Dtar
+        4.成功会在../hadoop-dist/hadoop-3.0.0/文件夹下创建hadoop-3.0.0.tar.gz文件
