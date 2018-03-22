@@ -36,3 +36,8 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
         3.执行mvn打包命令，附加参数
             mvn package -Pdist,native-win -DskipTests -Dtar
         4.成功会在../hadoop-dist/hadoop-3.0.0/文件夹下创建hadoop-3.0.0.tar.gz文件
+    
+    1.3在Windows中安装Hadoop
+        1.在自建目录下解压hadoop-3.0.0.tar.gz文件，应使用较短的文件夹名避免路径总长超出Windows路径长度的限制
+        2.将C:\Program Files\hadoop-3.0.0路径加入HADOOP_HOME环境变量
+        3.将%HADOOP_HOME%\bin变量加入PATH环境变量
