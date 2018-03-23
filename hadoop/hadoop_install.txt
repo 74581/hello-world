@@ -2,34 +2,48 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
 可以安装Cloudera 5虚拟机，执行操作步骤后开发环境最终会安装成功，快速搭建Hadoop开发环境
 
 1.在Windows系统中安装Hadoop
-    在Windows系统上运行Hadoop
+    参考：https://blog.csdn.net/songhaifengshuaige/article/details/79575308
+
     1.1准备安装环境
-        1.下载安装JDK
-        2.下载Hadoop，下载二进制版（省去自己编译打包源码的步骤），如hadoop-3.0.0.tar.gz，解压tar文件
+        1.下载安装JDK，安装目录不能有空格、中文！
+
+        2.下载Hadoop，下载二进制版（省去自己编译打包源码的步骤），如hadoop-3.0.0.tar.gz
+
+        # 跳过该步，VS非必要
         3.可以使用Visual Studio，或下载Microsoft Windows SDK,安装SDK给予完整权限，选择安装VS 2017
+        
+        # 跳过该步，Cygwin非必要
         4.下载安装Windows的类Linux环境Cygwin，从cygwin.com
+        
+        # 跳过该步，二进制版已完成编译
         5.下载Maven
+        
+        # 跳过该步，二进制版已完成编译
         6.下载Protocol Buffers，从https://github.com/google/protobuf/releases
             下载protobuf-all-3.5.1.zip、protoc-3.5.1-win32.zip
             解压zip包到文件夹，如C:\Program Files\protobuf-3.5.1，同时将win32包中内容也放在该目录下
+        
+        # 跳过该步，二进制版已完成编译
         7.下载ZLIB，从zlib.net
+        
         8.添加系统环境变量
-            JAVA_HOME: jdk路径
-            M2_HOME: Maven的路径
+            JAVA_HOME  # jdk路径
+            M2_HOME  # 省略
             Platform: X64
-            CYGWIN_HOME
-            PROTOBUF_HOME
-            ZLIB_HOME
+            CYGWIN_HOME  # 省略
+            PROTOBUF_HOME  # 省略
+            ZLIB_HOME  # 省略
+        
         9.添加PATH环境变量：
             %JAVA_HOME%\bin\
-            %CYGWIN_HOME%\bin\
-            %M2_HOME%\bin\
-            %PROTOBUF_HOME%\bin\
-            %ZLIB_HOME
-        Platform变量大小写敏感，尽管Windows环境变量对大小写不敏感，MAVEN对变量名大小写敏感
-        若未正确设置会导致编译Hadoop-common的原生代码时出现msbuild错误
+            %CYGWIN_HOME%\bin\  # 省略
+            %M2_HOME%\bin\  # 省略
+            %PROTOBUF_HOME%\bin\  # 省略
+            %ZLIB_HOME  # 省略
+            Platform变量大小写敏感，尽管Windows环境变量对大小写不敏感，MAVEN对变量名大小写敏感
+            若未正确设置会导致编译Hadoop-common的原生代码时出现msbuild错误
     
-    # 下载二进制版可跳过该步骤
+    # 下载二进制版，跳过该步骤
     1.2构建Windows环境下的Hadoop
         1.在管理员模式下运行命令行控制台
         2.打开Hadoop源码存放目录
@@ -39,7 +53,12 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
     
     1.3在Windows中安装Hadoop
         1.在自建目录下解压hadoop-3.0.0.tar.gz文件，应使用较短的文件夹名避免路径总长超出Windows路径长度的限制
-        2.将C:\Program Files\hadoop-3.0.0路径加入HADOOP_HOME环境变量
+        解压目录不能有空格、中文，应如C:\hadoop-3.0.0
+        解压tar文件，一定要用git Bash在Linux环境下解压.tar.gz文件，否则文件会受损或不完整！命令：
+            $ tar -xzvf file.tar.gz
+        
+        2.将C:\hadoop-3.0.0路径加入HADOOP_HOME环境变量
+        
         3.将%HADOOP_HOME%\bin变量加入PATH环境变量
     
     1.4配置Hadoop
@@ -63,12 +82,24 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
                 <value>1</value>
               </property>
               <property>
-                <name>dfs.namenode.name.dir</name>
-                <value>file:%HADOOP_HOME%/data/dfs/namenode</value>
+                <name>dfs.permissions</name>
+                <value>false</value>
               </property>
               <property>
+                <name>dfs.namenode.name.dir</name>
+                <value>/C:/hadoop-3.0.0/data/namenode</value>
+              </property>
+              <property>  
+                <name>fs.checkpoint.dir</name>  
+                <value>/C:/hadoop-3.0.0/data/snn</value>  
+              </property>  
+              <property>  
+                <name>fs.checkpoint.edits.dir</name>  
+                <value>/C:/hadoop-3.0.0/data/snn</value>  
+              </property> 
+              <property>
                 <name>dfs.datanode.data.dir</name>
-                <value>file:%HADOOP_HOME%/data/dfs/datanode</value>
+                <value>/C:/hadoop-3.0.0/data/datanode</value>
               </property>
             </configuration>
         dfs.namenode.name.dir和dfs.datanode.data.dir提到的文件目录需要在C：根目录中创建
@@ -83,14 +114,13 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
         3.yarn-site.xml
         覆盖YARN组件的默认属性值，地址：%HADOOP_HOME%/etc/hadoop/yarn-site.xml
             <configuration>
+            <!-- Site specific YARN configuration properties -->
               <property>
                 <name>yarn.nodemanager.aux-services</name>
                 <value>mapreduce_shuffle</value>
               </property>
               <property>
-                <name>
-                  yarn.nodemanager.aux-services.mapreduce_shuffle.class
-                </name>
+                <name>yarn.nodemanager.auxservices.mapreduce_shuffle.class</name>
                 <value>org.apache.hadoop.mapred.ShuffleHandler</value>
               </property>
             </configuration>
@@ -112,3 +142,17 @@ Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和�
             用来执行MapReduce任务的运行时框架，指定为YARN，表示任务会提交给YARN集群，yarn选项可将集群配置在伪分布模式中
             若设置为local则表示使用LocalJobRunner执行任务，local可用于开发环境，任务将在单个JVM中运行
             该属性决定了MapReduce框架运行在本地模式local，经典模式（classic，MapReduce v1），或YARN（yarn，MapReduce v2）模式中
+        
+        5.hadoop-env.cmd
+        地址：C:/hadoop-3.0.0/etc/hadoop/hadoop-env.cmd
+        找到"set JAVA_HOME=%JAVA_HOME%"替换为"set JAVA_HOME=C:\Java\jdk-10"
+
+        6.bin目录替换
+        下载解压对应版本的Windows用文件，从https://github.com/steveloughran/winutils
+        找到对应的版本，完整替换bin目录
+
+    1.5准备Hadoop集群
+        在准备启动集群之前，需要格式化名称节点，只需要执行一次
+        cmd打开%HADOOP_HOME%\bin目录，执行以下命令：
+        hdfs namenode -format
+        
