@@ -1,0 +1,55 @@
+Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和跟踪工作
+可以安装Cloudera 5虚拟机，执行操作步骤后开发环境最终会安装成功，快速搭建Hadoop开发环境
+
+1.安装系统
+Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
+    1.1安装虚拟机
+        使用VMware Workstation 14 Player，免费
+        其他可选软件：VMware Workstation 14 Pro，收费；Oracle VM VirtualBox，免费
+    
+    1.2安装操作系统
+        物理机母系统：Win10
+        物理机子系统：Ubuntu
+            安装后根目录：
+            C:\Users\<win10用户名>\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs\home\<Linux新建的用户名>
+        虚拟机系统：Ubuntu server 16.04.4 LTS
+        
+        都需要完成完成Linux系统下的基本操作
+            $ sudo apt-get update
+            $ sudo apt-get upgrade
+        
+    1.3配置IP
+        虚拟机系统安装完成后，需要修改为静态IP地址：
+            $ sudo vim /etc/network/interfaces
+        原内容有如下4行：
+            auto lo
+            iface lo inet loopback
+
+            auto eth33
+            iface eth0 inet dhcp
+        以上表示默认使用DHCP分配IP，修改为如下：
+            auto lo
+            iface lo inet loopback
+
+            # The primary network interface
+            auto eth33
+            #iface eth33 inet dhcp
+
+            iface eth33 inet static
+            address 192.168.56.130
+            netmask 255.255.255.0
+            gateway 192.168.56.2
+
+    1.4设置DNS服务器
+        输入命令：
+            $ sudo vim /etc/resolv.conf
+        添加内容:
+            nameserver 192.168.56.2
+        虚拟机不使用时挂起，一般不关机，以下内容备用：
+            重启Ubuntu后发现不能上网，问题出在/etc/resolv.conf
+            重启后此文件配置的DNS又被自动修改为默认值，需要永久性修改DNS：
+                $ sudo vim /etc/resolvconf/resolv.conf.d/base
+            添加内容：
+                nameserver 192.168.80.2
+            重启networking服务使其生效：
+                $ sudo /etc/init.d/networking restart
