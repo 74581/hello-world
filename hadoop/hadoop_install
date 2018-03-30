@@ -1,6 +1,8 @@
 Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和跟踪工作
 可以安装Cloudera 5虚拟机，执行操作步骤后开发环境最终会安装成功，快速搭建Hadoop开发环境
 
+参考：http://www.<用户名>.com/thread-23773-1-1.html
+
 1.安装系统
 Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
     1.1安装虚拟机
@@ -13,7 +15,6 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
             安装后根目录：
             C:\Users\<win10用户名>\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs\home\<Linux新建的用户名>
         虚拟机系统：Ubuntu server 16.04.4 LTS
-        
         都需要完成完成Linux系统下的基本操作
             $ sudo apt-get update
             $ sudo apt-get upgrade
@@ -53,3 +54,30 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
                 nameserver 192.168.80.2
             重启networking服务使其生效：
                 $ sudo /etc/init.d/networking restart
+
+2.安装必要软件
+    2.1ssh配置
+
+    2.2Java环境
+        创建新的文件夹用于存放JDK，或直接存放默认目录
+        在线下载JDK，注意http地址是下载页面里对应JDK文件的链接地址，分发：
+            $ sudo curl -o jdk-10_linux-x64_bin.tar.gz -L --cookie "oraclelicense=accept-securebackup-cookie"  http://download.oracle.com/otn-pub/java/jdk/10+46/76eac37278c24557a3c4199677f19b62/jdk-10_linux-x64_bin.tar.gz
+            $ sudo scp jdk-10_linux-x64_bin.tar.gz <用户名1>@<hostname1>:
+            $ sudo scp jdk-10_linux-x64_bin.tar.gz <用户名2>@<hostname2>:
+        解压，删除压缩包：
+            $ sudo tar -zxvf jdk-10_linux-x64_bin.tar.gz
+            $ sudo rm jdk-10_linux-x64_bin.tar.gz
+        修改环境变量
+            $ sudo vim ~/.bashrc
+        文件末尾追加:
+            #Set oracle jdk environment
+            export JAVA_HOME=/home/<用户名>/jdk-10
+            export JRE_HOME=${JAVA_HOME}/jre
+            export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+            export PATH=${JAVA_HOME}/bin:$PATH
+        使环境变量马上生效，分发：
+            $ sudo source ~/.bashrc
+            $ sudo scp ~/.bashrc <用户名1>@<hostname1>:~/
+            $ sudo scp ~/.bashrc <用户名2>@<hostname2>:~/
+        验证JDK是否安装配置成功
+            $ java -version
