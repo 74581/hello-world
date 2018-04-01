@@ -118,7 +118,8 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
             $ sudo scp -P 23 ~/.bashrc 用户名2@hostname2:~/
         验证JDK是否安装配置成功
             $ java -version
-3.Hadoop安装
+
+3.Hadoop安装及调试
     3.1下载解压
         创建新的文件夹用于存放Hadoop，或直接存放默认目录
             $ sudo curl -o hadoop-3.0.1.tar.gz -L http://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-3.0.1/hadoop-3.0.1.tar.gz
@@ -142,3 +143,74 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
             192.168.56.1
             192.168.56.130  # 或者hostname1
             192.168.56.131  # 或者hostname2
+    
+    3.2修改配置文件
+        $ sudo vim hadoop-3.0.0/etc/hadoop/core-site.xml
+        <configuration>
+          <property>
+            <name>fs.defaultFS</name>  # 默认文件系统的结构、主机名、端口号：使用HDFS文件系统，名称节点运行主机，使用9000端口
+            <!-- 或hosts配置的域名的对应主机名，如master -->
+            <value>hdfs://192.168.56.1:9000/</value>
+          </property>
+          <property>
+            <name>hadoop.tmp.dir</name>  # 临时路径
+            <value>/home/用户名/hadoop-3.0.0/tmp</value>  # 手动创建对应目录：$ sudo mkdir /home/用户名/hadoop-3.0.0/tmp
+          </property>
+        </configuration>
+
+        $ sudo vim hadoop-3.0.0/etc/hadoop/hdfs-site.xml
+        <configuration>
+          <property>
+            <name>dfs.namenode.name.dir</name>
+            <value>/home/用户名/hadoop-3.0.0/dfs/namenode</value>  # 手动创建对应目录：$ sudo mkdir /home/用户名/hadoop-3.0.0/dfs/namenode
+          </property>
+          <property>
+            <name>dfs.datanode.data.dir</name>
+            <value>/home/用户名/hadoop-3.0.0/dfs/datanode</value>  # 手动创建对应目录：$ sudo mkdir /home/用户名/hadoop-3.0.0/dfs/datanode
+          </property>
+          <property>
+            <name>dfs.replication</name>  # 副本数目
+            <value>1</value>
+          </property>
+          <property>
+            <name>dfs.permissions.enabled</name>  # true，则在HDFS中启用权限检查；false，权限检查被关闭，缺少此配置可能在远程开发中会连接失败
+            <value>false</value>
+          </property>
+        </configuration>
+
+        $ sudo vim hadoop-3.0.0/etc/hadoop/mapred-site.xml
+        <configuration>
+          <property>
+            <name>mapreduce.framework.name</name>
+            <value>yarn</value>  # local表示本地运行，classic表示经典mapreduce框架，yarn表示新框架
+          </property>
+          <property>
+            <name>mapreduce.admin.user.env</name>
+            <value>HADOOP_MAPRED_HOME=/home/用户名/hadoop-3.0.0</value>
+            // 如果map和reduce任务访问本地库（压缩等），必须保留原始值。
+            // 当此值为空时，设置执行环境的命令将取决于操作系统：
+            // Linux：LD_LIBRARY_PATH=$HADOOP_COMMON_HOME/lib/native.
+            // Windows：PATH =%PATH%;%HADOOP_COMMON_HOME%\\bin.
+          </property>
+          <property>
+            <name>yarn.app.mapreduce.am.env</name>  # 可设置AM（AppMaster）端的环境变量
+            <value>HADOOP_MAPRED_HOME=/home/用户名/hadoop-3.0.0</value>
+          </property>
+        </configuration>
+
+        $ sudo vim hadoop-3.0.0/etc/hadoop/yarn-site.xml
+        <configuration>
+        <!-- Site specific YARN configuration properties -->
+          <property>
+            <name>yarn.nodemanager.aux-services</name>  # NodeManager上运行的附属服务
+            <value>mapreduce_shuffle</value>
+          </property>
+          <property>                                                             
+            <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+            <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+          </property>
+        </configuration>
+
+        分发:
+            $ scp -P 23 -r /home/用户名/hadoop-3.0.0 用户名1@hostname1:/home/用户名
+            $ scp -P 23 -r /home/用户名/hadoop-3.0.0 用户名2@hostname2:/home/用户名
