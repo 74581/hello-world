@@ -214,3 +214,25 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
         分发:
             $ scp -P 23 -r /home/用户名/hadoop-3.0.0 用户名1@hostname1:/home/用户名
             $ scp -P 23 -r /home/用户名/hadoop-3.0.0 用户名2@hostname2:/home/用户名
+    
+    3.3调试
+        格式化nemenode:
+            $ hdfs namenode -format
+        启动集群:
+            $ start-dfs.sh
+            $ start-yarn.sh
+        启动dfs正常，yarn未正常启动及解决方案：
+            $ vim /home/用户名/hadoop-3.0.0/logs/hadoop-用户名-nodemanager-主机名.log  # 查看log，无需修改
+            // 错误原因：java.lang.NoClassDefFoundError: javax/activation/DataSource
+            $ sudo curl -o activation-1.1.1.jar -L http://central.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar
+            $ sudo cp /home/用户名/activation-1.1.1.jar /home/用户名/hadoop-3.0.0/share/hadoop/common/lib/
+            $ sudo rm activation-1.1.1.jar
+        访问管理页面：
+            http://192.168.56.1:8088
+            http://192.168.56.1:9870
+        未能正常显示及解决方案：
+            关闭Win10防火墙
+        备用内容：
+            虚拟机ping不通主机，但主机可以ping通虚拟机：
+            // 或者直接关闭防火墙
+            打开Win10防火墙高级设置，在入站规则里找到配置文件类型为“公用”的“文件和打印共享（回显请求 – ICMPv4-In）”规则，设置为允许
