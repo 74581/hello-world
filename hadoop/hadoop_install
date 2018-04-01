@@ -1,7 +1,7 @@
 Cloudera开发的Cloudera Manager大大简化了Hadoop系统作业的管理和跟踪工作
 可以安装Cloudera 5虚拟机，执行操作步骤后开发环境最终会安装成功，快速搭建Hadoop开发环境
 
-参考：http://www.<用户名>.com/thread-23773-1-1.html
+参考：http://www.aboutyun.com/thread-23773-1-1.html
 
 1.安装系统
 Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
@@ -13,7 +13,7 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
         物理机母系统：Win10
         物理机子系统：Ubuntu
             安装后根目录：
-            C:\Users\<win10用户名>\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs\home\<Linux新建的用户名>
+            C:\Users\win10用户名\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs\home\Linux新建的用户名
         虚拟机系统：Ubuntu server 16.04.4 LTS
         都需要完成完成Linux系统下的基本操作
             $ sudo apt-get update
@@ -28,7 +28,7 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
 
             auto eth33
             iface eth0 inet dhcp
-        以上表示默认使用DHCP分配IP，修改为如下：
+        以上表示默认使用DHCP分配IP，以一台虚拟机为例，修改如下：
             auto lo
             iface lo inet loopback
 
@@ -57,13 +57,50 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
 
 2.安装必要软件
     2.1ssh配置
+        安装SSH-server、SSH-client：
+            $ sudo apt-get install openssh-server
+            $ sudo apt-get install openssh-client
+        查看SSH是否启动，若没有任何显示则未安装/启动该服务：
+            $ ps -e | grep ssh
+        启动SSH（停止用stop，重启用restart），Win10子系统默认不启动ssh服务，需要手动开启：
+            $ sudo /etc/init.d/ssh start  # 通过openssh服务器的启动脚本文件启动
+            $ sudo service ssh start  # 通过Linux下的service命令启动，效果同上
+        开启root登录：
+            $ sudo vim /etc/ssh/sshd_config
+            PermitRootLogin yes
+        自动接受新的公钥：
+            $ sudo vim /etc/ssh/ssh_config
+            StrictHostKeyChecking no  # ssh、scp等实现当第一次连接服务器时自动接受新公钥
+        修改默认端口：
+            ssh默认端口为22，Windows系统已为自己的CMD应用将其占用，Win10子系统可访问虚拟机，虚拟机无法反向访问
+            $ sudo vim /etc/ssh/sshd_config  # 所有workers都需要修改
+            Port 23
+            Win10开了防火墙，需要修改防火墙设置，建立入站规则，允许传入的连接申请（allow incoming traffic）到23号端口，以便允许远程登陆
+        修改hosts，Win10子系统需要修改母系统的hosts，子系统自身的修改无效：
+            $ sudo vim /etc/hosts
+            # hadoop nodes
+            192.168.56.1   ubuntu-1
+            192.168.56.130 ubuntu-2
+            192.168.56.131 ubuntu-3
+        配置免密登陆：
+            $ ssh-keygen -t rsa  # 产生密钥
+            $ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys  # 导入authorized_keys
+            $ scp -P 23 ~/.ssh/authorized_keys 用户名1@hostname1:~/.ssh  # 分发
+            $ scp -P 23 ~/.ssh/authorized_keys 用户名2@hostname2:~/.ssh
+        重启openssh-server：
+            $ sudo service ssh restart
+        测试：
+            $ ssh hostname1
+        备用内容：
+            启动ssh-agent：
+            $ sudo eval ssh-agent
 
     2.2Java环境
         创建新的文件夹用于存放JDK，或直接存放默认目录
         在线下载JDK，注意http地址是下载页面里对应JDK文件的链接地址，分发：
             $ sudo curl -o jdk-10_linux-x64_bin.tar.gz -L --cookie "oraclelicense=accept-securebackup-cookie"  http://download.oracle.com/otn-pub/java/jdk/10+46/76eac37278c24557a3c4199677f19b62/jdk-10_linux-x64_bin.tar.gz
-            $ sudo scp jdk-10_linux-x64_bin.tar.gz <用户名1>@<hostname1>:
-            $ sudo scp jdk-10_linux-x64_bin.tar.gz <用户名2>@<hostname2>:
+            $ sudo scp -P 23 jdk-10_linux-x64_bin.tar.gz 用户名1@hostname1:
+            $ sudo scp -P 23 jdk-10_linux-x64_bin.tar.gz 用户名2@hostname2:
         解压，删除压缩包：
             $ sudo tar -zxvf jdk-10_linux-x64_bin.tar.gz
             $ sudo rm jdk-10_linux-x64_bin.tar.gz
@@ -71,13 +108,13 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
             $ sudo vim ~/.bashrc
         文件末尾追加:
             #Set oracle jdk environment
-            export JAVA_HOME=/home/<用户名>/jdk-10
+            export JAVA_HOME=/home/用户名/jdk-10
             export JRE_HOME=${JAVA_HOME}/jre
             export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
             export PATH=${JAVA_HOME}/bin:$PATH
         使环境变量马上生效，分发：
             $ sudo source ~/.bashrc
-            $ sudo scp ~/.bashrc <用户名1>@<hostname1>:~/
-            $ sudo scp ~/.bashrc <用户名2>@<hostname2>:~/
+            $ sudo scp -P 23 ~/.bashrc 用户名1@hostname1:~/
+            $ sudo scp -P 23 ~/.bashrc 用户名2@hostname2:~/
         验证JDK是否安装配置成功
             $ java -version
