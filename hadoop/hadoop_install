@@ -28,7 +28,7 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
 
             auto eth33
             iface eth0 inet dhcp
-        以上表示默认使用DHCP分配IP，以一台虚拟机为例，修改如下：
+            // 以上表示默认使用DHCP分配IP，以一台虚拟机为例，修改如下：
             auto lo
             iface lo inet loopback
 
@@ -106,7 +106,7 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
             $ sudo rm jdk-10_linux-x64_bin.tar.gz
         修改环境变量
             $ sudo vim ~/.bashrc
-        文件末尾追加:
+            // 文件末尾追加:
             #Set oracle jdk environment
             export JAVA_HOME=/home/用户名/jdk-10
             export JRE_HOME=${JAVA_HOME}/jre
@@ -118,3 +118,27 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
             $ sudo scp -P 23 ~/.bashrc 用户名2@hostname2:~/
         验证JDK是否安装配置成功
             $ java -version
+3.Hadoop安装
+    3.1下载解压
+        创建新的文件夹用于存放Hadoop，或直接存放默认目录
+            $ sudo curl -o hadoop-3.0.1.tar.gz -L http://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-3.0.1/hadoop-3.0.1.tar.gz
+        解压，删除压缩包：
+            $ sudo tar -zxvf hadoop-3.0.1.tar.gz
+            $ sudo rm hadoop-3.0.1.tar.gz
+        环境配置：
+            $ sudo vim ~/.bashrc
+            # Set Hadoop environment
+            export HADOOP_HOME=/home/用户名/hadoop-3.0.0
+            export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+
+            $ sudo vim hadoop-3.0.0/etc/hadoop/hadoop-env.sh
+            export JAVA_HOME=/home/用户名/jdk-10
+            export HADOOP_SSH_OPTS="-p 23"  # 因为ssh修改了端口
+
+            $ sudo vim hadoop-3.0.0/etc/hadoop/yarn-env.sh
+            export JAVA_HOME=/home/用户名/jdk-10
+
+            $ sudo vim hadoop-3.0.0/etc/hadoop/workers
+            192.168.56.1
+            192.168.56.130  # 或者hostname1
+            192.168.56.131  # 或者hostname2
