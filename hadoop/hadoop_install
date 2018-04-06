@@ -78,6 +78,8 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
             Win10开了防火墙，需要修改防火墙设置，建立入站规则，允许传入的连接申请（allow incoming traffic）到23号端口，以便允许远程登陆
         修改hosts，Win10子系统需要修改母系统的hosts，子系统自身的修改无效：
             $ sudo vim /etc/hosts
+            127.0.0.1      localhost.localdomain localhost  # namenode的host需要检查，Win10子系统每次开启会被重写
+
             # hadoop nodes
             192.168.56.1   ubuntu-1
             192.168.56.130 ubuntu-2
@@ -204,6 +206,10 @@ Hadoop一般在Linux系统下搭建和使用，Windows系统存在许多问题
           <property>
             <name>yarn.nodemanager.aux-services</name>  # NodeManager上运行的附属服务
             <value>mapreduce_shuffle</value>
+          </property>
+          <property>
+            <name>yarn.nodemanager.vmem-check-enabled</name>  # 禁用虚拟机内存检测
+            <value>false</value>
           </property>
           <property>                                                             
             <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
